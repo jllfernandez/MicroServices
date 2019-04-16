@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<!-- saved from url=(0070)https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/ -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+
+	<title>Arquitectura de microservicios - Parte 2: Implementación</title>
+	<meta name="description" content="">
+
+	<link href="./Arquitectura de microservicios - Parte 2_ Implementación_files/css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="./Arquitectura de microservicios - Parte 2_ Implementación_files/font-awesome.min.css">
+	<link rel="stylesheet" href="./Arquitectura de microservicios - Parte 2_ Implementación_files/screen.css">
+  <link rel="shortcut icon" href="https://enmilocalfunciona.io/assets/favicon.ico">
+	<link rel="canonical" href="https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/">
+    <meta name="referrer" content="origin">
+    
+    <meta property="og:site_name" content="En Mi Local Funciona">
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Arquitectura de microservicios - Parte 2: Implementación">
+    <meta property="og:description" content="En esta segunda parte de la serie de microservicios vamos a implementar de forma rápida, sencilla y para toda la familia un microservicio basado en las siguientes tecnologías: Spring Boot: como framework de aplicación. Spring MVC: como framework web. Spring Cloud: para integrar nuestro servicio con otros componentes que veremos">
+    <meta property="og:url" content="https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/">
+    <meta property="og:image" content="https://enmilocalfunciona.io/content/images/2016/09/perros_lemings-1.jpg">
+    <meta property="article:published_time" content="2016-09-20T10:50:59.000Z">
+    <meta property="article:modified_time" content="2016-09-20T11:45:37.000Z">
+    <meta property="article:tag" content="Microservicios">
+    <meta property="article:tag" content="Spring Boot">
+    <meta property="article:tag" content="Swagger">
+    <meta property="article:tag" content="Spring Cloud">
+    
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Arquitectura de microservicios - Parte 2: Implementación">
+    <meta name="twitter:description" content="En esta segunda parte de la serie de microservicios vamos a implementar de forma rápida, sencilla y para toda la familia un microservicio basado en las siguientes tecnologías: Spring Boot: como framework de aplicación. Spring MVC: como framework web. Spring Cloud: para integrar nuestro servicio con otros componentes que veremos">
+    <meta name="twitter:url" content="https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/">
+    <meta name="twitter:image:src" content="https://enmilocalfunciona.io/content/images/2016/09/perros_lemings-1.jpg">
+    
+    <script async="" src="./Arquitectura de microservicios - Parte 2_ Implementación_files/analytics.js.descarga"></script><script type="application/ld+json">
+{
+    "@context": "http://schema.org",
+    "@type": "Article",
+    "publisher": "En Mi Local Funciona",
+    "author": {
+        "@type": "Person",
+        "name": "Daniel Sánchez",
+        "image": "https://enmilocalfunciona.io/content/images/2016/06/GetPersonaPhoto.jpg",
+        "url": "https://enmilocalfunciona.io/author/dani/",
+        "description": "Lider técnico - Comunidad Arquitectura de Soluciones - atSistemas.\nMicroservicios +1. Especialista en muerte por refactor.\n&lt;br/&gt;Twitter: &lt;a href=&quot;https://twitter.com/nullp0int3r&quot;&gt;@nullp0int3r&lt;/a&gt;"
+    },
+    "headline": "Arquitectura de microservicios - Parte 2: Implementación",
+    "url": "https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/",
+    "datePublished": "2016-09-20T10:50:59.000Z",
+    "dateModified": "2016-09-20T11:45:37.000Z",
+    "image": "https://enmilocalfunciona.io/content/images/2016/09/perros_lemings-1.jpg",
+    "keywords": "Microservicios, Spring Boot, Swagger, Spring Cloud",
+    "description": "En esta segunda parte de la serie de microservicios vamos a implementar de forma rápida, sencilla y para toda la familia un microservicio basado en las siguientes tecnologías: Spring Boot: como framework de aplicación. Spring MVC: como framework web. Spring Cloud: para integrar nuestro servicio con otros componentes que veremos"
+}
+    </script>
+
+    <meta name="generator" content="Ghost 0.7">
+    <link rel="alternate" type="application/rss+xml" title="En Mi Local Funciona" href="https://enmilocalfunciona.io/rss/">
+    <script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-61411083-2', 'auto');
+  ga('send', 'pageview');
+</script>
+<style type="text/css">.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q{display:block!important;border:1px solid #cdcfd2!important;background-color:#fff!important;color:#373a3d!important;width:100vw!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-24GeGuJgk9LrMLp7qVvlyz{background:#6a7e89!important;color:#fff!important;padding:10px!important;font-size:18px!important;font-family:sans-serif!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-KVjdulkCFfUZps29EbgAC{background:#f3f6f8!important;border-bottom:1px solid #cdcfd2!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-KVjdulkCFfUZps29EbgAC>*{margin-right:10px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1OeZ2PQ98oAp6Vc5mMc6V5{list-style:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-vCwYmWF_l83ScZBrGnRoi,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1OeZ2PQ98oAp6Vc5mMc6V5{margin:0!important;padding:0!important;width:100%!important;display:block!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-vCwYmWF_l83ScZBrGnRoi:not(:last-child){border-bottom:1px solid #cdcfd2!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XQZkb-FlHWABUp4_uShaZ{color:inherit!important;cursor:pointer!important;width:100%!important;display:inline-block!important;margin:10px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XTzMvb2XKitWz0mFLlyyp{margin:5px!important;display:block!important;width:auto!important;white-space:pre!important;overflow-x:scroll!important;background:inherit!important;color:inherit!important;font-family:monospace}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1XTzMvb2XKitWz0mFLlyyp:not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-39QUvFFn5B7GMcqMQkOXZ3){display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-295DY3nO0DbJWMsOqmjCli{background:#f5f5f5!important;color:#5a5a5a!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1aQZwu6CUzAf2zUcI7tg0Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-295DY3nO0DbJWMsOqmjCli{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-38EPFyKXMtoP12rPlmrHxs{background:#e6f7ff!important;color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3W4ZnQjhoGfT1gTNcqRXdi .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-38EPFyKXMtoP12rPlmrHxs{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-HGYnfzlmgOZ-l7eANhQe_{background:#fff3ea!important;color:#993a00!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-24e52A11B1UIErbKHtBmqc .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-HGYnfzlmgOZ-l7eANhQe_{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-jji74ZzulHScD0OAD_G7h{background:#fef2f1!important;color:#b10823!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3npS60y-EvfF7G_lioSx2Q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-28jAOA7cDee-95LvwGsOP- .IN-2bc0215c-7188-4274-b598-1969e06d4d7c-jji74ZzulHScD0OAD_G7h{display:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu{background-color:#0073b1!important;border:0!important;border-radius:2px!important;box-sizing:border-box!important;color:#fff!important;cursor:pointer!important;display:inline-block!important;font-family:-apple-system,system-ui,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Fira Sans,Ubuntu,Oxygen,Oxygen Sans,Cantarell,Droid Sans,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Lucida Grande,Helvetica,Arial,sans-serif!important;font-weight:600!important;overflow:hidden!important;outline-width:2px!important;position:relative!important;text-align:center!important;text-decoration:none!important;vertical-align:middle!important;white-space:nowrap!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:disabled{cursor:not-allowed!important;opacity:.7!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:not(:disabled):not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy):hover{background-color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu:not(:disabled):not(.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy):active{background-color:#004b7c!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy{background-color:#fff!important;color:#0073b1!important;box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy:not(:disabled):hover{color:#006097!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1zhzkayakwEXovVYUbq5Gy:not(:disabled):active{color:#004b7c!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon{display:inline-block!important;height:100%!important;vertical-align:top!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon>svg{pointer-events:none!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr{font-size:10px!important;height:16px!important;line-height:16px!important;padding:0 6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr>xdoor-icon{margin-left:-6px!important;margin-right:3px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr>xdoor-icon>svg{height:16px!important;width:16px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-7inSbaAsvG5bf7w6lJTEr.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6{font-size:11px!important;height:20px!important;line-height:20px!important;padding:0 7px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6>xdoor-icon,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon{margin-left:-7px!important;margin-right:3.5px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6>xdoor-icon>svg,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu>xdoor-icon>svg{height:20px!important;width:20px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-3uCBSbQNVNf2QjqHe1rfb6.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon,.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-7px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG{font-size:14px!important;height:24px!important;line-height:24px!important;padding:0 12px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG>xdoor-icon{margin-left:-12px!important;margin-right:6px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG>xdoor-icon>svg{height:24px!important;width:24px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-21Smv9YG-5V6M6KP-5v2WG.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-12px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q{font-size:16px!important;height:32px!important;line-height:32px!important;padding:0 16px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q>xdoor-icon{margin-left:-16px!important;margin-right:8px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q>xdoor-icon>svg{height:32px!important;width:32px!important}.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1TGdQUTLZdNG4R87OfAB-q.IN-2bc0215c-7188-4274-b598-1969e06d4d7c-2lrEjt4SOTxqrYsv1piG4c>xdoor-icon{margin-right:-16px!important}</style><script src="./Arquitectura de microservicios - Parte 2_ Implementación_files/embed.js.descarga" data-timestamp="1555415576787"></script><link rel="preload" as="style" href="https://c.disquscdn.com/next/embed/styles/lounge.694ea7181ea49f1ce306dfc00c532f53.css"><link rel="preload" as="script" href="https://c.disquscdn.com/next/embed/common.bundle.2b6bb3725200b8d992a8cb9c288952d3.js"><link rel="preload" as="script" href="https://c.disquscdn.com/next/embed/lounge.bundle.c880931392854f5b024f43e1706c6562.js"><link rel="preload" as="script" href="https://disqus.com/next/config.js"><script src="./Arquitectura de microservicios - Parte 2_ Implementación_files/alfie.f51946af45e0b561c60f768335c9eb79.js.descarga" async="" charset="UTF-8"></script></head>
+<body class="post-template tag-microservicios tag-spring-boot tag-swagger tag-spring-cloud">
+
+	
+
+<nav>
+	<div class="toggle-menu">
+	    <div id="icon">
+	        <div class="one"></div>
+	        <div class="two"></div>
+	        <div class="three"></div>
+	    </div>
+
+	    <div id="menu">
+	        <ul>
+	            <li>
+			<a href="http://twitter.com/enmilocalfun"><span><i class="fa fa-twitter"></i></span> Twitter</a>
+	            </li>
+	            <li>
+			<a href="https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/"><span><i class="fa fa-github"></i></span> Github</a>
+	            </li>
+	            <li>
+			<a href="https://enmilocalfunciona.io/rss/"><span><i class="fa fa-rss"></i></span> RSS</a>
+	            </li>
+	        </ul>
+	    </div>
+	 </div>
+</nav>
+
+<header class="main-header " style="background-image: url(/content/images/2016/04/maxbanner.png)">
+	<figure class="logo">
+		<a href="https://enmilocalfunciona.io/"><img class="img-logo" src="./Arquitectura de microservicios - Parte 2_ Implementación_files/perfilblog-2.png" alt="Logo Blog"></a>
+	</figure>
+	<div class="title">
+		<a href="https://enmilocalfunciona.io/">
+			<h1>En Mi Local Funciona</h1>
+		</a>
+		<p>Technical thoughts, stories and ideas</p>
+	</div>
+</header>
+
+<section class="posts">
+
+		<article class="post tag-microservicios tag-spring-boot tag-swagger tag-spring-cloud">
+			<div class="inner">
+				<header class="header-post">
+					<span class="meta-post">
+								<figure class="avatar">
+									<img src="./Arquitectura de microservicios - Parte 2_ Implementación_files/GetPersonaPhoto.jpg" alt="">
+								</figure>
+							<h2 class="title-post">Arquitectura de microservicios - Parte 2: Implementación</h2>
+							<p>Publicado por <a href="https://enmilocalfunciona.io/author/dani/">Daniel Sánchez</a> el <time class="post-date" datetime="2016-09-20">20 September 2016</time></p>
+							<p>   <span class="custom-tag"><a href="https://enmilocalfunciona.io/tag/microservicios/">Microservicios</a></span><span class="custom-tag"><a href="https://enmilocalfunciona.io/tag/spring-boot/">Spring Boot</a></span><span class="custom-tag"><a href="https://enmilocalfunciona.io/tag/swagger/">Swagger</a></span><span class="custom-tag"><a href="https://enmilocalfunciona.io/tag/spring-cloud/">Spring Cloud</a> </span></p>
+					</span>
+				</header>
+
+				<section class="content-post">
+					<p>En esta segunda parte de la serie de microservicios vamos a implementar de forma rápida, sencilla y para toda la familia un microservicio basado en las siguientes tecnologías:</p>
+
+<ul>
+<li><strong>Spring Boot</strong>: como framework de aplicación.</li>
+<li><strong>Spring MVC</strong>: como framework web.</li>
+<li><strong>Spring Cloud</strong>: para integrar nuestro servicio con otros componentes que veremos más adelante.</li>
+<li><strong>Swagger</strong>: para documentar y definir nuestro API.</li>
+</ul>
+
+<p><img src="./Arquitectura de microservicios - Parte 2_ Implementación_files/perros_lemings.jpg" alt=""></p>
+
+<p>La idea será partir de un código funcional muy sencillo e ir integrando más diversión progresivamente.</p>
+
+<h4 id="comencemos">Comencemos</h4>
+
+<div class="image-div" style="position: relative; width: 70%;margin-left:15%">  
+<img src="./Arquitectura de microservicios - Parte 2_ Implementación_files/bricomania.jpeg" alt="">
+</div>
+
+<p>Vamos a implementar un microservicio llamado <strong><em>Sadr</em></strong> que expondrá la operación <strong><em>ping</em></strong> que devuelve un mensaje. <br>
+Utilizaremos <strong>Maven</strong> para su construcción, así en su pom tendremos como parent:</p>
+
+<pre><code class="language-xml hljs"><span class="hljs-tag">&lt;<span class="hljs-title">parent</span>&gt;</span>  
+    <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>spring-boot-starter-parent<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>1.4.0.RELEASE<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">parent</span>&gt;</span>  
+</code></pre>
+
+<p>Vamos a incluir en el dependency management las dependencias de <strong>Spring Cloud</strong> para posteriormente integrar nuestro servicio con un servidor de configuración y un servicio de discovery (recordemos el <a href="http://enmilocalfunciona.io/arquitectura-microservicios-1/">anterior post</a>).</p>
+
+<pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">dependencyManagement</span>&gt;</span>  
+    <span class="hljs-tag">&lt;<span class="hljs-title">dependencies</span>&gt;</span>
+        <span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>org.springframework.cloud<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>spring-cloud-dependencies<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>Brixton.SR1<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">type</span>&gt;</span>pom<span class="hljs-tag">&lt;/<span class="hljs-title">type</span>&gt;</span>
+            <span class="hljs-tag">&lt;<span class="hljs-title">scope</span>&gt;</span>import<span class="hljs-tag">&lt;/<span class="hljs-title">scope</span>&gt;</span>
+        <span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span>
+    <span class="hljs-tag">&lt;/<span class="hljs-title">dependencies</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">dependencyManagement</span>&gt;</span>  
+</code></pre>
+
+<p>También vamos a tunearlo un poco haciendo que corra bajo <strong>Undertow</strong> embebido en lugar de <strong>Tomcat</strong>. Conseguiremos de esta manera mejorar su rendimiento. Para ello tenemos que añadir la siguiente dependencia:  </p>
+
+<pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span>  
+    <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>spring-boot-starter-undertow<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span>  
+</code></pre>
+
+<p>Y añadiremos también la dependencia de <strong><a href="http://docs.spring.io/spring-boot/docs/current/reference/html/production-ready-endpoints.html">Spring Boot Actuator</a></strong> lo que nos permitirá monitorizar aspectos como salud y configuración de nuestra aplicación:</p>
+
+<pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span>  
+    <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>org.springframework.boot<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>spring-boot-starter-actuator<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span>  
+</code></pre>
+
+<p>A continuación vamos a ver la implementación y la configuración de nuestro servicio. Todo el código puede descargarse desde el repositorio <a href="https://github.com/atSistemas/cygnus.git">cygnus</a></p>
+
+<h4 id="implementacin">Implementación</h4>
+
+<div class="image-div" style="position: relative; width: 70%;margin-left:15%">  
+<img src="./Arquitectura de microservicios - Parte 2_ Implementación_files/sadr_eclipse-1.jpg" alt="">
+</div>  
+
+<p>Como aplicación <strong>Spring Boot</strong> tendremos una clase main que anotaremos con <strong><em>@SpringBootApplication</em></strong>. Recordemos que con esta anotación ya no son necesarias <strong><em>@Config</em></strong> y <strong><em>@Autoconfiguration</em></strong></p>
+
+<ul>
+<li><strong>Application.java</strong></li>
+</ul>
+
+<pre><code class="hljs java"><span class="hljs-annotation">@SpringBootApplication</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Application</span> </span>{
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+        SpringApplication.run(Application.class, args);
+    }   
+}
+</code></pre>
+
+<p>Añadiremos un controlador de <strong>Spring MVC</strong> que anotaremos con las anotaciones de <a href="http://swagger.io/"><strong>Swagger</strong></a> para definir nuestro API:</p>
+
+<ul>
+<li><strong>SadrController.java</strong></li>
+</ul>
+
+<pre><code class="hljs java"><span class="hljs-annotation">@Api</span>
+<span class="hljs-annotation">@RestController</span>
+<span class="hljs-annotation">@RequestMapping</span>(<span class="hljs-string">"sadr/"</span>)
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SadrController</span> </span>{
+
+    <span class="hljs-keyword">private</span> Logger logger = LoggerFactory.getLogger(<span class="hljs-keyword">this</span>.getClass());
+
+    <span class="hljs-annotation">@RequestMapping</span>(method = RequestMethod.POST, value = <span class="hljs-string">"ping/"</span>)
+    <span class="hljs-annotation">@ApiOperation</span>(value = <span class="hljs-string">"ping"</span>, nickname = <span class="hljs-string">"ping"</span>, response = PingResponse.class)
+    <span class="hljs-annotation">@ApiResponses</span>(value = { <span class="hljs-annotation">@ApiResponse</span>(code = <span class="hljs-number">200</span>, message = <span class="hljs-string">"Success"</span>, response = String.class),
+            <span class="hljs-annotation">@ApiResponse</span>(code = <span class="hljs-number">201</span>, message = <span class="hljs-string">"Created"</span>), <span class="hljs-annotation">@ApiResponse</span>(code = <span class="hljs-number">400</span>, message = <span class="hljs-string">"Bad Request"</span>),
+            <span class="hljs-annotation">@ApiResponse</span>(code = <span class="hljs-number">401</span>, message = <span class="hljs-string">"Unauthorized"</span>), <span class="hljs-annotation">@ApiResponse</span>(code = <span class="hljs-number">403</span>, message = <span class="hljs-string">"Forbidden"</span>),
+            <span class="hljs-annotation">@ApiResponse</span>(code = <span class="hljs-number">404</span>, message = <span class="hljs-string">"Not Found"</span>), <span class="hljs-annotation">@ApiResponse</span>(code = <span class="hljs-number">500</span>, message = <span class="hljs-string">"Failure"</span>) })
+    <span class="hljs-function"><span class="hljs-keyword">public</span> PingResponse <span class="hljs-title">ping</span><span class="hljs-params">(
+            @ApiParam(value = <span class="hljs-string">"request"</span>, required = <span class="hljs-keyword">true</span>)</span> @<span class="hljs-title">RequestBody</span><span class="hljs-params">(required = <span class="hljs-keyword">true</span>)</span> PingRequest request) </span>{
+
+        logger.debug(<span class="hljs-string">"--&gt; ping received"</span>);
+        logger.debug(<span class="hljs-string">"--&gt; id: {}"</span>, request.getId());
+        logger.debug(<span class="hljs-string">"--&gt; content: {}"</span>, request.getMessage());
+
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> PingResponse(<span class="hljs-string">"Hello from Sadr - "</span> + request.getId() + <span class="hljs-string">" - "</span> + request.getMessage());
+    }
+}
+</code></pre>
+
+<p>Aprovechamos e incluimos las dependencias de <strong>Swagger</strong>. Hemos utilizado las librerías de <strong>Springfox</strong> ya que integra muy bien <strong>Swagger</strong> con <strong>Spring MVC</strong>:  </p>
+
+<pre><code class="hljs xml"><span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span>  
+    <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>io.springfox<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>springfox-swagger-ui<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>2.4.0<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span>  
+<span class="hljs-tag">&lt;<span class="hljs-title">dependency</span>&gt;</span>  
+    <span class="hljs-tag">&lt;<span class="hljs-title">groupId</span>&gt;</span>io.springfox<span class="hljs-tag">&lt;/<span class="hljs-title">groupId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">artifactId</span>&gt;</span>springfox-swagger2<span class="hljs-tag">&lt;/<span class="hljs-title">artifactId</span>&gt;</span>
+    <span class="hljs-tag">&lt;<span class="hljs-title">version</span>&gt;</span>2.4.0<span class="hljs-tag">&lt;/<span class="hljs-title">version</span>&gt;</span>
+<span class="hljs-tag">&lt;/<span class="hljs-title">dependency</span>&gt;</span>  
+</code></pre>
+
+<p>Añadimos una clase de configuración para Swagger:</p>
+
+<ul>
+<li><strong>SwaggerConfig.java</strong></li>
+</ul>
+
+<pre><code class="hljs java"><span class="hljs-annotation">@Configuration</span>
+<span class="hljs-annotation">@EnableSwagger</span>2
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SwaggerConfig</span> </span>{
+
+    <span class="hljs-javadoc">/**
+     * Create Swagger Api configuration
+     *
+     *<span class="hljs-javadoctag"> @return</span> Swagger Docket
+     */</span>
+    <span class="hljs-annotation">@Bean</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> Docket <span class="hljs-title">sadrApi</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> Docket(DocumentationType.SWAGGER_2)
+                .groupName(<span class="hljs-string">"cygnus"</span>)
+                .apiInfo(apiInfo())
+                .select()
+                    .apis(RequestHandlerSelectors.withClassAnnotation(Api.class))
+                    .paths(PathSelectors.any())
+                    .build()
+                .pathMapping(<span class="hljs-string">"/"</span>)
+                .genericModelSubstitutes(ResponseEntity.class)
+                .useDefaultResponseMessages(<span class="hljs-keyword">false</span>);
+    }
+
+    <span class="hljs-javadoc">/**
+     * Generate Api Info
+     *
+     *<span class="hljs-javadoctag"> @return</span> Swagger API Info
+     */</span>
+    <span class="hljs-function"><span class="hljs-keyword">private</span> ApiInfo <span class="hljs-title">apiInfo</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> ApiInfoBuilder()
+                .title(<span class="hljs-string">"Sadr"</span>)
+                .description(<span class="hljs-string">"Gamma Cygni"</span>)
+                .version(<span class="hljs-string">"0.1-SNAPSHOT"</span>)
+                .termsOfServiceUrl(<span class="hljs-string">"https://es.wikipedia.org/wiki/Sadr"</span>)
+                .license(<span class="hljs-string">"Open source licensing"</span>)
+                .licenseUrl(<span class="hljs-string">"https://help.github.com/articles/open-source-licensing/"</span>)
+                .build();
+    }
+}
+</code></pre>
+
+<p>Hubiera sido interesante (a la par que elegante) el poder desacoplar las anotaciones de <strong>Swagger</strong> del controlador por ejemplo en una interface, de esta manera quedaría más limpio el código del controlador, pero hasta la fecha, <strong>Swagger</strong> no lo soporta.  </p>
+
+<h4 id="configuracin">Configuración</h4>
+
+<p>Tendremos el siguiente fichero de configuración:</p>
+
+<ul>
+<li><strong>application.properties</strong>:</li>
+</ul>
+
+<pre><code class="hljs bash"><span class="hljs-comment"># HTTP Server</span>
+server:  
+  port: <span class="hljs-number">3333</span>   <span class="hljs-comment"># HTTP port</span>
+
+<span class="hljs-comment"># Spring properties</span>
+spring:  
+  application:
+    name: sadr-service
+
+logging:  
+  file: logs/<span class="hljs-variable">${spring.application.name}</span>.log
+  level:
+    org.springframework.cloud: <span class="hljs-string">'DEBUG'</span>
+    com.atsistemas: <span class="hljs-string">'DEBUG'</span>
+</code></pre>
+
+<p>La property <strong><em>server.port</em></strong> indica el puerto donde el servicio escuchará y <strong><em>spring.application.name</em></strong> el nombre de la aplicación.</p>
+
+<p>Con esto ya tenemos listo nuestro microservicio. Para arrancarlo: <br>
+<code>mvn spring-boot:run</code></p>
+
+<p>Podemos probarlo mediante la interface de <strong>swagger-ui</strong>: <br>
+<a href="http://localhost:3333/swagger-ui.html">http://localhost:3333/swagger-ui.html</a>  </p>
+
+<div class="image-div" style="position: relative; width: 70%;margin-left:15%">  
+<img src="./Arquitectura de microservicios - Parte 2_ Implementación_files/sadr_swagger-ui.jpg" alt="">
+</div>
+
+<p>Esto todo por el momento, en el siguiente post veremos cómo hacer que nuestro microservicio cargue su configuración en tiempo de bootstrap de un servidor mediante <strong>Spring Cloud Config</strong> y se registre en un Registry Server (<strong>Eureka</strong>).</p>
+
+<p>¡Síguenos en <a href="https://twitter.com/enmilocalfun">Twitter</a> para no perderte ni un post de la serie!</p>
+				</section>
+
+				<footer class="footer-post">
+
+					<section class="author-post">
+							<figure class="avatar">
+								<img src="./Arquitectura de microservicios - Parte 2_ Implementación_files/GetPersonaPhoto.jpg" alt="Daniel Sánchez">
+							</figure>
+
+						<div class="bio">
+							<span>Autor</span>
+							<h4 class="author-name">
+								<a href="https://enmilocalfunciona.io/author/dani/">Daniel Sánchez</a>
+							</h4>
+								<p>Lider técnico - Comunidad Arquitectura de Soluciones - atSistemas.
+Microservicios +1. Especialista en muerte por refactor.
+<br>Twitter: <a href="https://twitter.com/nullp0int3r">@nullp0int3r</a></p>
+						</div>
+					</section>
+
+					<section class="share">
+						<h4>Comparte</h4>
+						<a href="https://twitter.com/share?text=Arquitectura%20de%20microservicios%20-%20Parte%202:%20Implementaci%C3%B3n&amp;url=https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/" class="fa fa-twitter" onclick="window.open(this.href, &#39;twitter-share&#39;, &#39;width=550,height=235&#39;);return false;">
+							<span class="hidden">Twitter</span>
+						</a>
+
+						<a href="https://www.facebook.com/sharer/sharer.php?u=https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/" class="fa fa-facebook" onclick="window.open(this.href, &#39;facebook-share&#39;,&#39;width=580,height=296&#39;);return false;">
+							<span class="hidden">Facebook</span>
+						</a>
+
+						<a href="https://plus.google.com/share?url=https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/" class="fa fa-google-plus" onclick="window.open(this.href, &#39;google-plus-share&#39;, &#39;width=490,height=530&#39;);return false;">
+							<span class="hidden">Google+</span>
+						</a>
+
+                                                <script src="./Arquitectura de microservicios - Parte 2_ Implementación_files/in.js.descarga" type="text/javascript">lang: es_ES</script>
+						<span class="IN-widget" data-lnkd-debug="&lt;script type=&quot;IN/Share+init&quot; data-url=&quot;https://enmilocalfunciona.io/arquitectura-de-microservicios-parte-2-2/&quot;&gt;&lt;/script&gt;" style="display: inline-block; line-height: 1; vertical-align: bottom; padding: 0px; margin: 0px; text-indent: 0px; text-align: center;"><span style="padding: 0px !important; margin: 0px !important; text-indent: 0px !important; display: inline-block !important; vertical-align: bottom !important; font-size: 1px !important;"><button class="IN-2bc0215c-7188-4274-b598-1969e06d4d7c-1G9ISYhSF8XoOmdcl0yKDu"><xdoor-icon aria-hidden="true"><svg viewBox="0 0 24 24" width="24px" height="24px" x="0" y="0" preserveAspectRatio="xMinYMin meet">
+      <g style="fill: currentColor">
+        <rect x="-0.003" style="fill:none;" width="24" height="24"></rect>
+        <path style="" d="M20,2h-16c-1.1,0-2,0.9-2,2v16c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V4C22,2.9,21.1,2,20,2zM8,19h-3v-9h3V19zM6.5,8.8C5.5,8.8,4.7,8,4.7,7s0.8-1.8,1.8-1.8S8.3,6,8.3,7S7.5,8.8,6.5,8.8zM19,19h-3v-4c0-1.4-0.6-2-1.5-2c-1.1,0-1.5,0.8-1.5,2.2V19h-3v-9h2.9v1.1c0.5-0.7,1.4-1.3,2.6-1.3c2.3,0,3.5,1.1,3.5,3.7V19z"></path>
+      </g>
+    </svg></xdoor-icon>Compartir</button></span></span>
+					</section>
+				</footer>
+
+				<section class="comments-post">
+					<!-- Disqus Comments -->
+<div id="disqus_thread"><iframe id="dsq-app7575" name="dsq-app7575" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" sandbox="allow-forms allow-popups allow-same-origin allow-scripts" width="100%" src="./Arquitectura de microservicios - Parte 2_ Implementación_files/saved_resource(2).html" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 586px !important;"></iframe><iframe id="dsq-app7572" name="dsq-app7572" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" width="100%" src="./Arquitectura de microservicios - Parte 2_ Implementación_files/saved_resource(3).html" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 1081px !important;" horizontalscrolling="no" verticalscrolling="no"></iframe><iframe id="dsq-app7577" name="dsq-app7577" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0" title="Disqus" sandbox="allow-forms allow-popups allow-same-origin allow-scripts" width="100%" src="./Arquitectura de microservicios - Parte 2_ Implementación_files/saved_resource(4).html" style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 623px !important;"></iframe></div>
+<script>
+
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//enmilocalfunciona.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+					</section>
+
+			</div>
+		</article>
+	</section>
+
+
+	<footer class="blog-footer">
+		<div class="inner">
+			<div style="float:left;width:50%;margin-top: 18px">
+				<a href="https://enmilocalfunciona.io/condiciones-uso">Condiciones de Uso</a>
+			</div>
+			<div style="float:right;width:50%">
+				<p>Powered by <a href="http://atsistemas.com/">atSistemas</a></p>
+			</div>
+		</div>
+	</footer>
+
+	
+
+	<script src="./Arquitectura de microservicios - Parte 2_ Implementación_files/jquery.min.js.descarga"></script>
+	<script src="./Arquitectura de microservicios - Parte 2_ Implementación_files/highlight.min.js.descarga"></script>
+
+	<script>
+
+		//Menu Toggle
+		$("#icon").click(function() {
+		    $(this).toggleClass("active");
+	        $("#menu").fadeToggle();
+        });
+
+		//Code Highlighter
+        $(document).ready(function() {
+          $('pre code').each(function(i, block) {
+            hljs.highlightBlock(block);
+          });
+        });
+
+        //Google Analytics
+
+	</script>
+<script id="dsq-count-scr" src="./Arquitectura de microservicios - Parte 2_ Implementación_files/count.js.descarga" async=""></script>
+
+
+<iframe style="display: none;" src="./Arquitectura de microservicios - Parte 2_ Implementación_files/saved_resource(5).html"></iframe></body></html>
